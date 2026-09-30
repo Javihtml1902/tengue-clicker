@@ -1,2 +1,2 @@
 # tengue-clicker
-Aqui actualizare y pondre las versiones mas actualizadas del juego, solo descarguenla
+Para jugar el juego, solo denle click donde dice: "tengueclicker.html" y se descargará automaticamente
