@@ -1,0 +1,846 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Climate+Crisis:YEAR@1979&family=Fredoka:wght@300..700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+      rel="stylesheet"
+    />
+    <title>Tengue Clicker</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: Poppins, sans-serif;
+        margin: 0;
+        padding: 10px;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 400px));
+        gap: 20px;
+        justify-content: center;
+        align-items: start;
+        background: #ead8c7;
+      }
+      header,
+      .changelog,
+      .juego,
+      .tiendaUpgrade,
+      .divLogros {
+        width: 100%;
+        border: 4px solid #3d1c02;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        background: #8b4513;
+        color: #1a1a1a;
+      }
+      header {
+        grid-column: 1/-1;
+        text-align: center;
+        font-family: "Climate Crisis";
+        padding: 20px 20px 1px;
+        border-radius: 6px;
+      }
+      .textoSmall {
+        font-size: small;
+        font-weight: 600;
+        font-family: Poppins;
+      }
+      .juego {
+        padding: 40px;
+        min-height: 300px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+      .mostrador {
+        display: block;
+        font-size: 3rem;
+        font-weight: 800;
+        line-height: 1;
+        text-align: center;
+      }
+      .puntaje {
+        font-size: 1.5rem;
+        font-weight: 500;
+        text-align: center;
+      }
+      .btn {
+        background: #fff;
+        color: #1a1a1a;
+        border: 2px solid #1a1a1a;
+        padding: 8px 20px;
+        font-family: Poppins, sans-serif;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 4px;
+        cursor: pointer;
+        box-shadow: 3px 3px 0 #1a1a1a;
+        transition: 0.05s;
+        user-select: none;
+        touch-action: manipulation;
+      }
+      .btn:hover {
+        background: #f5f5f5;
+        transform: translate(-1px, -1px);
+        box-shadow: 4px 4px 0 #1a1a1a;
+      }
+      .btn:active {
+        transform: translate(2px, 2px);
+        box-shadow: 1px 1px 0 #1a1a1a;
+      }
+
+      .tiendaUpgrade,
+      .divLogros {
+        height: 430px;
+        padding: 25px;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+      .tituloTienda,
+      .tituloLogros,
+      .categoriaLogro {
+        font-family: Fredoka, sans-serif;
+        color: #290101;
+      }
+      .tituloTienda,
+      .tituloLogros {
+        margin: 0 0 20px;
+        font-size: 1.5rem;
+        position: sticky;
+        top: -25px;
+        background: #8b4513;
+        padding-top: 25px;
+        z-index: 2;
+      }
+      .listaUpgrade,
+      .listaLogros {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .listaUpgrade {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .listItem {
+        margin: 0;
+        padding: 0;
+      }
+      .listItem .btn {
+        width: 100%;
+        min-height: 62px;
+        text-align: left;
+        font-size: 0.92rem;
+        line-height: 1.35;
+        white-space: normal;
+      }
+      .categoriaLogro {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 20px 0 10px;
+        border-bottom: 2px solid #3d1c02;
+        padding-bottom: 5px;
+      }
+      .listaLogros {
+        margin-bottom: 15px;
+      }
+      .listaLogros li {
+        background: #fff;
+        border: 2px solid #1a1a1a;
+        border-radius: 4px;
+        padding: 8px 12px;
+        margin-bottom: 5px;
+        font-weight: 600;
+        box-shadow: 3px 3px 0 #1a1a1a;
+      }
+      .listaLogros li.bloqueado {
+        background: #6b452d;
+        color: #c9b8a8;
+        border-color: #3d1c02;
+        box-shadow: 3px 3px 0 #3d1c02;
+        opacity: 0.65;
+      }
+      .listaLogros li.bloqueado::before {
+        content: "🔒 ";
+      }
+      .listaLogros li.desbloqueado::before {
+        content: "🏆 ";
+      }
+      .logroDescripcion {
+        margin: 2px 0 8px 5px;
+        color: #ead8c7;
+        font-size: small;
+        font-weight: 600;
+        line-height: 1.3;
+      }
+
+      .changelog {
+        grid-column: 1/-1;
+        max-width: 1240px;
+        margin: 0 auto 20px;
+        padding: 20px 25px;
+      }
+      .changelog h2 {
+        font-family: Fredoka;
+        margin: 0 0 12px;
+        color: #290101;
+        font-size: 1.5rem;
+      }
+      .changelog ul {
+        margin: 0;
+        padding-left: 25px;
+      }
+      .changelog li {
+        margin-bottom: 6px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: #ead8c7;
+      }
+      .changelog li:last-child {
+        margin-bottom: 0;
+      }
+
+      .notificacionLogro {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        width: 300px;
+        padding: 15px 18px;
+        background: #8b4513;
+        border: 4px solid #3d1c02;
+        border-radius: 8px;
+        box-shadow: 5px 5px 0 #1a1a1a;
+        color: #fff;
+        font-weight: 600;
+        white-space: pre-line;
+        animation: aparecerLogro 0.2s ease;
+      }
+      @keyframes aparecerLogro {
+        from {
+          transform: translateX(30px);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+
+      @media (max-width: 1250px) and (min-width: 851px) {
+        body {
+          grid-template-columns: repeat(2, minmax(0, 400px));
+        }
+      }
+      @media (max-width: 850px) {
+        body {
+          grid-template-columns: minmax(0, 400px);
+          padding: 10px;
+        }
+        header,
+        .changelog {
+          grid-column: 1;
+        }
+        .juego,
+        .tiendaUpgrade,
+        .divLogros {
+          max-width: 400px;
+          margin: auto;
+        }
+        .notificacionLogro {
+          left: 10px;
+          right: 10px;
+          top: 10px;
+          width: auto;
+        }
+      }
+      @media (max-width: 450px) {
+        body {
+          padding: 8px;
+        }
+        header {
+          padding: 15px 10px 5px;
+        }
+        .juego {
+          padding: 30px;
+        }
+        .mostrador {
+          font-size: 3rem;
+        }
+        .tiendaUpgrade {
+          padding: 20px;
+          height: 420px;
+        }
+        .divLogros {
+          padding: 20px;
+          height: 400px;
+        }
+        .tituloTienda,
+        .tituloLogros {
+          font-size: 1.3rem;
+        }
+        .categoriaLogro {
+          font-size: 1rem;
+        }
+        .listItem .btn {
+          font-size: 0.87rem;
+          min-height: 60px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <h1>tengue clicker</h1>
+      <p class="textoSmall" id="fraseAleatoria">El original</p>
+    </header>
+
+    <div class="juego">
+      <p class="puntaje">
+        puntaje:<br /><span id="puntaje" class="mostrador">0</span>
+      </p>
+      <button id="botonPrincipal" class="btn">tengue</button>
+    </div>
+
+    <div class="tiendaUpgrade">
+      <h2 class="tituloTienda">TIENDA DE UPGRADES</h2>
+      <ul id="tienda" class="listaUpgrade"></ul>
+    </div>
+
+    <div class="divLogros">
+      <h2 class="tituloLogros">Tus Logros</h2>
+      <div id="contenedorLogros"></div>
+    </div>
+
+    <div class="changelog">
+      <h2>Update 1.4</h2>
+      <ul>
+        <li>agregado logro "tavo tavo tavo"</li>
+        </ul>
+    </div>
+
+    <script>
+      /* =========================================================
+   1. CONFIGURA LA TIENDA AQUÍ
+   Para agregar un objeto, solo copia uno de estos objetos
+   y cambia sus valores.
+   ========================================================= */
+      /* =========================================================
+   FRASES ALEATORIAS
+   Agrega, edita o elimina frases dentro de esta lista.
+   Una frase se elige cada vez que abres/refrescas el juego.
+   ========================================================= */
+      const frasesAleatorias = [
+        "El original",
+        "papa",
+        "tengue tengue tengue tenuge tengue",
+        "lluvia de nolis",
+        "YO QUIERO ESE LOGRO",
+        "refrezca la pagina cuantas veces quieras ese logro no lo obtendras",
+        "NUNCA EN IPHONE",
+        "no arreglare el bug de iphone",
+        "solo los sigmas estan en el grupo secreto",
+        "gracias por jugar mi juego :3",
+        "tengue: 7 tus manos: 0",
+        "ola ola pasa pasa",
+        "cityboi",
+        "papa clicker para 2067",
+        
+      ];
+
+      /* =========================================================
+   LOGRO POR REFRESCAR
+   Cambia la meta para decidir cuántas veces debes refrescar.
+   ========================================================= */
+      const metaRefrescos = 50;
+
+      const mejoras = [
+        {
+          nombre: "Comprar 1 Noli",
+          texto: "+1 click",
+          costo: 15,
+          tipo: "click",
+          cantidad: 1,
+          nolis: 1,
+        },
+        {
+          nombre: "Comprar 5 Nolis",
+          texto: "+5 clicks",
+          costo: 50,
+          tipo: "click",
+          cantidad: 5,
+          nolis: 5,
+        },
+        {
+          nombre: "Comprar 25 Nolis",
+          texto: "+25 clicks",
+          costo: 200,
+          tipo: "click",
+          cantidad: 25,
+          nolis: 25,
+        },
+
+        {
+          nombre: "Comprar 1 Tengue chambeador",
+          texto: "+1 autoclick",
+          costo: 250,
+          tipo: "auto",
+          cantidad: 1,
+        },
+        {
+          nombre: "Comprar 5 Tengues chambeadores",
+          texto: "+10 autoclicks",
+          costo: 500,
+          tipo: "auto",
+          cantidad: 10,
+        },
+        {
+          nombre: "Comprar 10 Nolis chambeador",
+          texto: "+50 autoclicks",
+          costo: 1000,
+          tipo: "auto",
+          cantidad: 50,
+        },
+      ];
+
+      /* =========================================================
+   2. CONFIGURA LOS LOGROS AQUÍ
+   Para agregar uno nuevo, copia un objeto y cambia sus datos.
+   ========================================================= */
+      const logros = [
+        // LOGROS DE BROMA
+        {
+          key: "funny1",
+          categoria: "Logros de broma",
+          nombre: "Numero Chistoso",
+          descripcion: "Alcanza los 67 tengues",
+          tipo: "puntaje",
+          meta: 67,
+        },
+        {
+          key: "funny2",
+          categoria: "Logros de broma",
+          nombre: "Numero Mas Chistoso",
+          descripcion: "Alcanza los 670 tengues",
+          tipo: "puntaje",
+          meta: 670,
+        },
+        {
+          key: "funny3",
+          categoria: "Logros de broma",
+          nombre: "Numero Super Chistoso",
+          descripcion: "Alcanza los 6700 tengues",
+          tipo: "puntaje",
+          meta: 6700,
+        },
+        {
+          key: "funny4",
+          categoria: "Logros de broma",
+          nombre: "Numero Demasiado Chistoso",
+          descripcion: "Alcanza los 67000 tengues",
+          tipo: "puntaje",
+          meta: 67000,
+        },
+        {
+          key: "funny5",
+          categoria: "Logros de broma",
+          nombre: "67 Mini",
+          descripcion: "Alcanza los 670000 tengues",
+          tipo: "puntaje",
+          meta: 670000,
+        },
+        {
+          key: "funny6",
+          categoria: "Logros de broma",
+          nombre: "67 Master",
+          descripcion: "Alcanza los 6700000 tengues",
+          tipo: "puntaje",
+          meta: 6700000,
+        },
+        {
+          key: "funny7",
+          categoria: "Logros de broma",
+          nombre: "67 Pro Max",
+          descripcion: "Alcanza los 67000000 tengues",
+          tipo: "puntaje",
+          meta: 67000000,
+        },
+
+        // LOGROS DE DESAFÍO
+        {
+          key: "desafio1",
+          categoria: "Logros de desafío",
+          nombre: "Jugando En Serio",
+          descripcion: "Alcanza los 1000 tengues sin comprar mejoras",
+          tipo: "desafio",
+          meta: 1000,
+        },
+        {
+          key: "desafio2",
+          categoria: "Logros de desafío",
+          nombre: "YO JUEGO tengue clicker",
+          descripcion: "Alcanza los 10000 tengues sin comprar mejoras",
+          tipo: "desafio",
+          meta: 10000,
+        },
+        {
+          key: "desafio3",
+          categoria: "Logros de desafío",
+          nombre: "El puntaje de Javier",
+          descripcion: "Alcanza los 26000 tengues sin comprar mejoras",
+          tipo: "desafio",
+          meta: 26000,
+        },
+        {
+          key: "desafio4",
+          categoria: "Logros de desafío",
+          nombre: "Bañandome en clicks",
+          descripcion: "Alcanza los 100000 tengues sin comprar mejoras",
+          tipo: "desafio",
+          meta: 100000,
+        },
+        {
+          key: "desafio5",
+          categoria: "Logros de desafío",
+          nombre: "VICIADO",
+          descripcion: "Alcanza los 1000000 tengues sin comprar mejoras",
+          tipo: "desafio",
+          meta: 1000000,
+        },
+        {
+          key: "desafio6",
+          categoria: "Logros de desafío",
+          nombre: "TENGUE CLICKER",
+          descripcion: "Consigue TODOS los logros del juego",
+          tipo: "todos",
+        },
+
+        // LOGROS DE COLECCIÓN
+        {
+          key: "general1",
+          categoria: "Logros de Colección",
+          nombre: "Mi primer Click",
+          descripcion: "Alcanza 1 tengue",
+          tipo: "puntaje",
+          meta: 1,
+        },
+        {
+          key: "general2",
+          categoria: "Logros de Colección",
+          nombre: "Calentando",
+          descripcion: "Alcanza los 1000 tengues",
+          tipo: "puntaje",
+          meta: 1000,
+        },
+        {
+          key: "general3",
+          categoria: "Logros de Colección",
+          nombre: "Tengues como Galletas",
+          descripcion: "Alcanza los 10000 tengues",
+          tipo: "puntaje",
+          meta: 10000,
+        },
+        {
+          key: "general4",
+          categoria: "Logros de Colección",
+          nombre: "Aumenten la produccion de tengues",
+          descripcion: "Alcanza los 100000 tengues",
+          tipo: "puntaje",
+          meta: 100000,
+        },
+        {
+          key: "general5",
+          categoria: "Logros de Colección",
+          nombre: "Tengueando",
+          descripcion: "Alcanza los 1000000 tengues",
+          tipo: "puntaje",
+          meta: 1000000,
+        },
+        {
+          key: "general6",
+          categoria: "Logros de Colección",
+          nombre: "FIRMA TENGUE FIRMA",
+          descripcion: "Compra un tengue Chambeador",
+          tipo: "autoclick",
+        },
+        {
+          key: "general7",
+          categoria: "Logros de Colección",
+          nombre: "Nolis por todos lados",
+          descripcion: "Compra 15 Nolis",
+          tipo: "nolis",
+          meta: 15,
+        },
+        {
+          key: "general8",
+          categoria: "Logros de Colección",
+          nombre: "tavo tavo tavo",
+          descripcion: "Refresca el juego VARIAS veces",
+          tipo: "refrescos",
+          meta: metaRefrescos,
+        },
+      ];
+
+      /* =========================================================
+   3. VARIABLES DEL JUEGO
+   ========================================================= */
+      const botonPrincipal = document.getElementById("botonPrincipal");
+      const puntajeMostrador = document.getElementById("puntaje");
+      const tienda = document.getElementById("tienda");
+      const contenedorLogros = document.getElementById("contenedorLogros");
+
+      let puntajeReal = 0;
+      let puntajeMultiplier = 1;
+      let puntajeAutoclick = 0;
+
+      let maxPuntaje = Number(localStorage.getItem("maxPuntajeTengue")) || 0;
+      let haCompradoMejora =
+        localStorage.getItem("haCompradoMejora") === "true";
+      let haCompradoAutoclick =
+        localStorage.getItem("haCompradoAutoclick") === "true";
+      let nolisComprados = Number(localStorage.getItem("nolisComprados")) || 0;
+
+      let vecesRefrescado =
+        Number(localStorage.getItem("vecesRefrescado")) || 0;
+
+      vecesRefrescado++;
+      localStorage.setItem("vecesRefrescado", vecesRefrescado);
+
+      const fraseAleatoria = document.getElementById("fraseAleatoria");
+
+      fraseAleatoria.textContent =
+        frasesAleatorias[Math.floor(Math.random() * frasesAleatorias.length)];
+
+      let logrosDesbloqueados = new Set(
+        JSON.parse(localStorage.getItem("logrosDesbloqueados") || "[]"),
+      );
+
+      /* =========================================================
+   4. FUNCIONES BÁSICAS
+   ========================================================= */
+      function mostrarPuntaje() {
+        puntajeMostrador.textContent = puntajeReal;
+      }
+
+      function guardarProgreso() {
+        localStorage.setItem("maxPuntajeTengue", maxPuntaje);
+        localStorage.setItem("haCompradoMejora", haCompradoMejora);
+        localStorage.setItem("haCompradoAutoclick", haCompradoAutoclick);
+        localStorage.setItem("nolisComprados", nolisComprados);
+        localStorage.setItem(
+          "logrosDesbloqueados",
+          JSON.stringify([...logrosDesbloqueados]),
+        );
+      }
+
+      function desbloquearLogro(logro) {
+        if (logrosDesbloqueados.has(logro.key)) return;
+
+        logrosDesbloqueados.add(logro.key);
+        actualizarAparienciaLogros();
+        guardarProgreso();
+
+        const notificacion = document.createElement("div");
+        notificacion.className = "notificacionLogro";
+        notificacion.textContent = "🏆 ¡Logro desbloqueado!\n" + logro.nombre;
+        document.body.appendChild(notificacion);
+
+        setTimeout(() => notificacion.remove(), 3000);
+      }
+
+      /* =========================================================
+   5. CREAR LA TIENDA AUTOMÁTICAMENTE
+   ========================================================= */
+      function crearTienda() {
+        tienda.innerHTML = "";
+
+        mejoras.forEach((mejora, i) => {
+          const li = document.createElement("li");
+          li.className = "listItem";
+
+          const boton = document.createElement("button");
+          boton.className = "btn";
+          boton.dataset.mejoria = i;
+          boton.textContent =
+            mejora.nombre +
+            " (" +
+            mejora.texto +
+            ") -- Costo: " +
+            mejora.costo +
+            " clicks";
+
+          li.appendChild(boton);
+          tienda.appendChild(li);
+        });
+      }
+
+      function comprarMejora(mejora) {
+        if (puntajeReal < mejora.costo) {
+          alert("No tienes suficientes clicks para comprar este upgrade.");
+          return;
+        }
+
+        puntajeReal -= mejora.costo;
+
+        if (mejora.tipo === "click") {
+          puntajeMultiplier += mejora.cantidad;
+          haCompradoMejora = true;
+          nolisComprados += mejora.nolis || 0;
+        }
+
+        if (mejora.tipo === "auto") {
+          puntajeAutoclick += mejora.cantidad;
+          haCompradoMejora = true;
+          haCompradoAutoclick = true;
+        }
+
+        mostrarPuntaje();
+        actualizarLogros();
+        guardarProgreso();
+      }
+
+      tienda.addEventListener("click", (event) => {
+        const boton = event.target.closest("[data-mejoria]");
+        if (!boton) return;
+
+        comprarMejora(mejoras[Number(boton.dataset.mejoria)]);
+      });
+
+      /* =========================================================
+   6. CREAR LOS LOGROS AUTOMÁTICAMENTE
+   ========================================================= */
+      function crearLogros() {
+        contenedorLogros.innerHTML = "";
+
+        const categorias = [...new Set(logros.map((logro) => logro.categoria))];
+
+        categorias.forEach((categoria) => {
+          const titulo = document.createElement("p");
+          titulo.className = "categoriaLogro";
+          titulo.textContent = categoria;
+          contenedorLogros.appendChild(titulo);
+
+          const lista = document.createElement("ul");
+          lista.className = "listaLogros";
+
+          logros
+            .filter((logro) => logro.categoria === categoria)
+            .forEach((logro) => {
+              const li = document.createElement("li");
+              li.dataset.logro = logro.key;
+              li.textContent = logro.nombre;
+              li.className = logrosDesbloqueados.has(logro.key)
+                ? "desbloqueado"
+                : "bloqueado";
+
+              const descripcion = document.createElement("p");
+              descripcion.className = "logroDescripcion";
+              descripcion.textContent = logro.descripcion;
+
+              lista.appendChild(li);
+              lista.appendChild(descripcion);
+              logro.elemento = li;
+            });
+
+          contenedorLogros.appendChild(lista);
+        });
+      }
+
+      function actualizarAparienciaLogros() {
+        logros.forEach((logro) => {
+          if (!logro.elemento) return;
+
+          logro.elemento.classList.toggle(
+            "desbloqueado",
+            logrosDesbloqueados.has(logro.key),
+          );
+          logro.elemento.classList.toggle(
+            "bloqueado",
+            !logrosDesbloqueados.has(logro.key),
+          );
+        });
+      }
+
+      /* =========================================================
+   7. COMPROBAR LOGROS
+   ========================================================= */
+      function actualizarLogros() {
+        if (puntajeReal > maxPuntaje) {
+          maxPuntaje = puntajeReal;
+        }
+
+        logros.forEach((logro) => {
+          if (logrosDesbloqueados.has(logro.key)) return;
+
+          if (logro.tipo === "puntaje" && maxPuntaje >= logro.meta) {
+            desbloquearLogro(logro);
+          }
+
+          if (
+            logro.tipo === "desafio" &&
+            !haCompradoMejora &&
+            maxPuntaje >= logro.meta
+          ) {
+            desbloquearLogro(logro);
+          }
+
+          if (logro.tipo === "autoclick" && haCompradoAutoclick) {
+            desbloquearLogro(logro);
+          }
+
+          if (logro.tipo === "nolis" && nolisComprados >= logro.meta) {
+            desbloquearLogro(logro);
+          }
+
+          if (logro.tipo === "refrescos" && vecesRefrescado >= logro.meta) {
+            desbloquearLogro(logro);
+          }
+        });
+
+        // TENGUE CLICKER = todos los demás logros
+        const logroFinal = logros.find((logro) => logro.tipo === "todos");
+
+        if (
+          logroFinal &&
+          logros
+            .filter((logro) => logro.key !== logroFinal.key)
+            .every((logro) => logrosDesbloqueados.has(logro.key))
+        ) {
+          desbloquearLogro(logroFinal);
+        }
+
+        actualizarAparienciaLogros();
+        guardarProgreso();
+      }
+
+      /* =========================================================
+   8. INICIAR JUEGO
+   ========================================================= */
+      crearTienda();
+      crearLogros();
+      mostrarPuntaje();
+      actualizarAparienciaLogros();
+      actualizarLogros();
+
+      botonPrincipal.addEventListener("click", () => {
+        puntajeReal += puntajeMultiplier;
+        mostrarPuntaje();
+        actualizarLogros();
+      });
+
+      setInterval(() => {
+        if (puntajeAutoclick > 0) {
+          puntajeReal += puntajeAutoclick;
+          mostrarPuntaje();
+          actualizarLogros();
+        }
+      }, 1000);
+    </script>
+  </body>
+</html>
