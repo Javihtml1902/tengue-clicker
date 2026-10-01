@@ -43,11 +43,26 @@
         padding: 20px 20px 1px;
         border-radius: 6px;
       }
-      .textoSmall {
-        font-size: small;
-        font-weight: 600;
-        font-family: Poppins;
-      }
+.textoSmall {
+  font-size: small;
+  font-weight: 600;
+  font-family: Poppins;
+  display: inline-block;
+  animation: splashTexto 1.5s cubic-bezier(0.2, 1.4, 0.4, 1) infinite;
+}
+
+@keyframes splashTexto {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08) ;
+  }
+}  
+
+
       .juego {
         padding: 40px;
         min-height: 300px;
@@ -319,9 +334,10 @@
     </div>
 
     <div class="changelog">
-      <h2>Update 1.4</h2>
+      <h2>Update 1.5</h2>
       <ul>
-        <li>agregado logro "tavo tavo tavo"</li>
+        <li>Agregada animacion al textoSmall</li>
+        <li>balanceado el logro "TENGUE CLICKER"</li>
         </ul>
     </div>
 
@@ -343,8 +359,7 @@
         "lluvia de nolis",
         "YO QUIERO ESE LOGRO",
         "refrezca la pagina cuantas veces quieras ese logro no lo obtendras",
-        "NUNCA EN IPHONE",
-        "no arreglare el bug de iphone",
+        "AHORA EN IPHONE",
         "solo los sigmas estan en el grupo secreto",
         "gracias por jugar mi juego :3",
         "tengue: 7 tus manos: 0",
@@ -606,6 +621,10 @@
         localStorage.getItem("haCompradoAutoclick") === "true";
       let nolisComprados = Number(localStorage.getItem("nolisComprados")) || 0;
 
+      let maxPuntajeSinMejoras =
+        Number(localStorage.getItem("maxPuntajeSinMejoras")) ||
+        (!haCompradoMejora ? maxPuntaje : 0);
+
       let vecesRefrescado =
         Number(localStorage.getItem("vecesRefrescado")) || 0;
 
@@ -630,6 +649,7 @@
 
       function guardarProgreso() {
         localStorage.setItem("maxPuntajeTengue", maxPuntaje);
+        localStorage.setItem("maxPuntajeSinMejoras", maxPuntajeSinMejoras);
         localStorage.setItem("haCompradoMejora", haCompradoMejora);
         localStorage.setItem("haCompradoAutoclick", haCompradoAutoclick);
         localStorage.setItem("nolisComprados", nolisComprados);
@@ -775,6 +795,10 @@
           maxPuntaje = puntajeReal;
         }
 
+        if (!haCompradoMejora && puntajeReal > maxPuntajeSinMejoras) {
+          maxPuntajeSinMejoras = puntajeReal;
+        }
+
         logros.forEach((logro) => {
           if (logrosDesbloqueados.has(logro.key)) return;
 
@@ -784,8 +808,7 @@
 
           if (
             logro.tipo === "desafio" &&
-            !haCompradoMejora &&
-            maxPuntaje >= logro.meta
+            maxPuntajeSinMejoras >= logro.meta
           ) {
             desbloquearLogro(logro);
           }
